@@ -3,14 +3,16 @@
 #include<stdlib.h> //para usar el rand
 #include<conio.h>
 
-
 #define ARRIBA 72
 #define IZQUIERDA 75
 #define DERECHA 77
 #define ABAJO 80 //Para usar cursores segun tabla ASCII
+#define ENTER 13
 
 void iraxy(int, int); // Función para movernos dentro de la pantalla, como un puntero
+void OculCurs();//ocultar el cursor de la pantalla
 void pintar_limites();
+void Marco();//marco inicial del juego
 
 class PERSONAJE { //Las clases especifica la forma de un objeto
 	int x, y, corazones, vidas; //variables locales
@@ -173,29 +175,118 @@ void OBJETOS::choque(class PERSONAJE &N) { //FUNCION QUE LA ENTRA UNA ESTRUCTURA
 	}
 }
 
-int main() {
-	int fin_juego = 1;
-	pintar_limites();
-	PERSONAJE N(18, 22, 3, 3);//Estas funciones antes del while
-	N.dibujar();//         se hacen para que se muestren en pantalla los elementos
-	N.pintar_corazones();//antes de adentrarnos al bucle while.
-	META M(1, 1);
-	OBJETOS obj(3, 10); //
+int main() 
+{
+	int y = 12, x = 10;
+	char tecla, ini;
+	bool start = TRUE, p1 = 1, p2 = 1, back=1;
+	iraxy(10, 9); printf("FroggieA104");
+	iraxy(17, 12); printf("Instrucciones");
+	iraxy(17, 13); printf("Start");
+	iraxy(17, 14); printf("EXIT");
+	iraxy(13, y); printf("==>");
+	while (start != 0)//EMPIEZA EL JUEGO
+	{
+		tecla = _getch();
+		iraxy(13, y); printf("   ");
+		if (tecla == 80) y++;
+		if (tecla == 72) y--;
+		if (y < 12 || y>14)
+		{
+			if (y < 12) y = 14;
+			else y = 14;
+		}
+		FijarCoord(13, y); printf("==>");
+		if (tecla == 13)//si pulso ENTER
+		{
+			switch (y)
+			{
+			case 12: //en la opcion INSTRUCCIONES
+				system("cls"); Marco();//deberia imprimirse el fichero de instrucciones
+				iraxy(26, 15); printf("Start");
+				iraxy(26, 16); printf("_____");
+				ini = _getch();
+				if (ini == 13)
+				{
+					//fclose(fi);//cerrar el fichero
+					system("cls"); int fin_juego = 1; pintar_limites();
+					PERSONAJE N(18, 22, 3, 3);//Estas funciones antes del while
+					N.dibujar();//         se hacen para que se muestren en pantalla los elementos
+					N.pintar_corazones();//antes de adentrarnos al bucle while.
+					META M(1, 1);
+					OBJETOS obj(3, 10); //
 	
+					while (fin_juego = 1) 
+					{
+						obj.mover();
+						obj.choque(N); //evalua si nos chocamos con el objeto obj
+						M.dibujar();
+						M.choque(N);
+						N.mover();
+						N.morir();
+						Sleep(30);//Tarda 30ms entre ejecuciones del bucle para que no se sature
+					}
+				}
+				break;
+			case 13://En la opcion START
+				system("cls"); int fin_juego = 1; pintar_limites();
+				PERSONAJE N(18, 22, 3, 3);//Estas funciones antes del while
+				N.dibujar();//         se hacen para que se muestren en pantalla los elementos
+				N.pintar_corazones();//antes de adentrarnos al bucle while.
+				META M(1, 1);
+				OBJETOS obj(3, 10); //
 	
-	while (fin_juego = 1) {
-		obj.mover();
-		obj.choque(N); //evalua si nos chocamos con el objeto obj
-		M.dibujar();
-		M.choque(N);
-		N.mover();
-		N.morir();
-		Sleep(30);//Tarda 30ms entre ejecuciones del bucle para que no se sature
+				while (fin_juego = 1) 
+				{
+					obj.mover();
+					obj.choque(N); //evalua si nos chocamos con el objeto obj
+					M.dibujar();
+					M.choque(N);
+					N.mover();
+					N.morir();
+					Sleep(30);//Tarda 30ms entre ejecuciones del bucle para que no se sature
+				}
+				break;
+			case 14://En ls opcion exit
+				system("cls"); Marco(); iraxy(5, 7);
+				printf("Seguro que quiere salir?");
+				iraxy(11, 14); printf("Si");
+				iraxy(21, 14); printf("No");
+				iraxy(10, 15); printf("____");
+				while (p2 != 0)
+				{
+					tecla = _getch();
+					iraxy(x, 15); printf("    ");
+					if (tecla == 77) x += 10;
+					if (tecla == 75) x -= 10;
+					if (x < 10 || x > 20)
+					{
+						if (x < 10) x = 20;
+						else x = 20;
+					}
+					FijarCoord(x, 15); printf("____");
+					if (tecla == 13)
+					{
+						if (x == 10) { p2 = FALSE; start = 0; }
+					}
+				}
+				break;
+			}
+		}
 	}
-
-
 	system("pause");
 }
+
+void OculCurs()
+{
+	HANDLE hcon;
+	hcon = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO A; //estructura con las caracteristicas del cursor
+	A.bVisible = FALSE;
+	A.dwSize = 10;
+	SetConsoleCursorInfo(hcon, &A);//aparicion del cursor
+}
+
 void iraxy(int x, int y)
 {
 	HANDLE coger;
@@ -230,3 +321,22 @@ void pintar_limites() {
 		iraxy(37, 24);
 		printf("%c", 188);
 }
+void Marco()
+{
+	int x, y;
+	iraxy(0, 0); printf("%c", 201);
+	iraxy(0, 20); printf("%c", 200);
+	iraxy(35, 0); printf("%c", 187);
+	iraxy(35, 20); printf("%c", 188);
+	for (x = 1; x < 35; x++)
+	{
+		iraxy(x, 0); printf("%c", 205);
+		iraxy(x, 20); printf("%c", 205);
+	}
+	for (y = 1; y < 20; y++)
+	{
+		iraxy(0, y); printf("%c", 186);
+		iraxy(35, y); printf("%c", 186);
+	}
+}
+//NOMBRE: Froggie
