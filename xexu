@@ -189,15 +189,15 @@ int main()
 	{
 		tecla = _getch();
 		iraxy(13, y); printf("   ");
-		if (tecla == 80) y++;
-		if (tecla == 72) y--;
+		if (tecla == ABAJO) y++;
+		if (tecla == ARRIBA) y--;
 		if (y < 12 || y>14)
 		{
 			if (y < 12) y = 14;
 			else y = 14;
 		}
 		FijarCoord(13, y); printf("==>");
-		if (tecla == 13)//si pulso ENTER
+		if (tecla == ENTER)//si pulso ENTER
 		{
 			switch (y)
 			{
@@ -206,7 +206,7 @@ int main()
 				iraxy(26, 15); printf("Start");
 				iraxy(26, 16); printf("_____");
 				ini = _getch();
-				if (ini == 13)
+				if (ini == ENTER)
 				{
 					//fclose(fi);//cerrar el fichero
 					system("cls"); int fin_juego = 1; pintar_limites();
