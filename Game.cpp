@@ -55,13 +55,13 @@ void PERSONAJE::mover() {
 		tecla = _getch(); // con un scanf_s no funciona nose xk
 		iraxy(x, y);
 		borrar();
-		if (tecla == IZQUIERDA && x>3 ) //El personaje se mueve a la izquierda, con limite de pantalla
+		if (tecla == IZQUIERDA && x > 3) //El personaje se mueve a la izquierda, con limite de pantalla
 			x--;
-		if (tecla == DERECHA && x+2 < 37)//El personaje se mueve a la derecha, con límite, y el +6 por lo que ocupa el personaje
+		if (tecla == DERECHA && x + 2 < 37)//El personaje se mueve a la derecha, con límite, y el +6 por lo que ocupa el personaje
 			x++;
 		if (tecla == ARRIBA && y > 3)//El personaje se mueve hacia arriba (inversión del eje y), con limite
 			y--;
-		if (tecla == ABAJO && y+1 < 23)//El personaje se mueve hacia abajo, con limite, y teniendo en cuenta al personaje
+		if (tecla == ABAJO && y + 1 < 23)//El personaje se mueve hacia abajo, con limite, y teniendo en cuenta al personaje
 			y++;
 		if (tecla == 'e') // Tecla de prueba para quitar corazones rapido
 		{
@@ -81,7 +81,7 @@ void PERSONAJE::pintar_corazones() {
 	iraxy(31, 1);
 	printf("       ");
 	for (i = 0; i < corazones; i++) {
-		iraxy(31+i, 1);
+		iraxy(31 + i, 1);
 		printf("%c", 3); //Simbolo ASCII del corazón
 	}
 }
@@ -109,7 +109,7 @@ public:
 	int X() { return x; } //para sacar el valor de x (para el choque)
 	int Y() { return y; }
 	void dibujar();
-	void choque(class PERSONAJE &N);
+	void choque(class PERSONAJE& N);
 };
 META::META(int _x, int _y) {
 	x = _x;
@@ -123,7 +123,7 @@ void META::dibujar() {
 		printf("%c", 178);// Linea horizontal en ascii
 	}
 }
-void META::choque(class PERSONAJE &N) { //FUNCION QUE LA ENTRA UNA ESTRUCTURA O CLASS
+void META::choque(class PERSONAJE& N) { //FUNCION QUE LA ENTRA UNA ESTRUCTURA O CLASS
 	if (x >= N.X() && x < N.X() + 2 && y >= N.Y() && y <= N.Y() + 2) //Cogiendo lo que ocupa la nave
 	{
 		N.dibujar(); //para que no se nos borre la nave
@@ -141,13 +141,13 @@ public:
 	OBJETOS(int _x, int _y);
 	void dibujar(); // Es un dibujar y mover diferentes a los de la nave
 	void mover();
-	void choque(class PERSONAJE &N);
+	void choque(class PERSONAJE& N);
 };
 OBJETOS::OBJETOS(int _x, int _y) {
 	x = _x;
 	y = _y;
 
-} 
+}
 void OBJETOS::dibujar() {
 	iraxy(x, y);
 	printf("%c", 184);
@@ -160,12 +160,12 @@ void OBJETOS::mover() {
 	if (x > 35) {
 		y = rand() % 37 + 3; //Cogiendo el resto del número tendremos uno entre 0 y 71
 						  // el +4 es para que entre dentro de la pantalla de juego y no en 0
-			x = 10;
+		x = 10;
 	}
 	dibujar();
 }
-void OBJETOS::choque(class PERSONAJE &N) { //FUNCION QUE LA ENTRA UNA ESTRUCTURA O CLASS
-	if (x >= N.X() && x < N.X() + 6 && y>=N.Y() && y<=N.Y()+2) //Cogiendo lo que ocupa la nave
+void OBJETOS::choque(class PERSONAJE& N) { //FUNCION QUE LA ENTRA UNA ESTRUCTURA O CLASS
+	if (x >= N.X() && x < N.X() + 6 && y >= N.Y() && y <= N.Y() + 2) //Cogiendo lo que ocupa la nave
 	{
 		N.COR();//llAMAR A LA FUNCION DE ARRIBA RESTANDO CORAZONES
 		N.dibujar(); //para que no se nos borre la nave
@@ -175,11 +175,12 @@ void OBJETOS::choque(class PERSONAJE &N) { //FUNCION QUE LA ENTRA UNA ESTRUCTURA
 	}
 }
 
-int main() 
+int main()
 {
+	OculCurs();
 	int y = 12, x = 10;
 	char tecla, ini;
-	bool start = TRUE, p1 = 1, p2 = 1, back=1;
+	bool start = TRUE, p1 = 1, p2 = 1, back = 1;
 	iraxy(10, 9); printf("FroggieA104");
 	iraxy(17, 12); printf("Instrucciones");
 	iraxy(17, 13); printf("Start");
@@ -196,12 +197,13 @@ int main()
 			if (y < 12) y = 14;
 			else y = 14;
 		}
-		FijarCoord(13, y); printf("==>");
+		iraxy(13, y); printf("==>");
 		if (tecla == ENTER)//si pulso ENTER
 		{
 			switch (y)
 			{
 			case 12: //en la opcion INSTRUCCIONES
+			{
 				system("cls"); Marco();//deberia imprimirse el fichero de instrucciones
 				iraxy(26, 15); printf("Start");
 				iraxy(26, 16); printf("_____");
@@ -215,8 +217,8 @@ int main()
 					N.pintar_corazones();//antes de adentrarnos al bucle while.
 					META M(1, 1);
 					OBJETOS obj(3, 10); //
-	
-					while (fin_juego = 1) 
+
+					while (fin_juego == 1)
 					{
 						obj.mover();
 						obj.choque(N); //evalua si nos chocamos con el objeto obj
@@ -228,15 +230,18 @@ int main()
 					}
 				}
 				break;
+			}
+				
 			case 13://En la opcion START
-				system("cls"); int fin_juego = 1; pintar_limites();
+			{
+				system("cls"); bool fin_juego = 1; pintar_limites();
 				PERSONAJE N(18, 22, 3, 3);//Estas funciones antes del while
 				N.dibujar();//         se hacen para que se muestren en pantalla los elementos
 				N.pintar_corazones();//antes de adentrarnos al bucle while.
 				META M(1, 1);
 				OBJETOS obj(3, 10); //
-	
-				while (fin_juego = 1) 
+
+				while (fin_juego == 1)
 				{
 					obj.mover();
 					obj.choque(N); //evalua si nos chocamos con el objeto obj
@@ -247,6 +252,7 @@ int main()
 					Sleep(30);//Tarda 30ms entre ejecuciones del bucle para que no se sature
 				}
 				break;
+			}
 			case 14://En ls opcion exit
 				system("cls"); Marco(); iraxy(5, 7);
 				printf("Seguro que quiere salir?");
@@ -264,7 +270,7 @@ int main()
 						if (x < 10) x = 20;
 						else x = 20;
 					}
-					FijarCoord(x, 15); printf("____");
+					iraxy(x, 15); printf("____");
 					if (tecla == 13)
 					{
 						if (x == 10) { p2 = FALSE; start = 0; }
@@ -298,28 +304,28 @@ void iraxy(int x, int y)
 }
 void pintar_limites() {
 	int i; //Variable local de la función
-		for (i = 2; i < 38 ; i++) //Limites del juego por arriba y abajo
-		{
-			iraxy(i, 2);
-			printf("%c", 205);// Linea horizontal en ascii
-			iraxy(i, 24);
-			printf("%c", 205);
+	for (i = 2; i < 38; i++) //Limites del juego por arriba y abajo
+	{
+		iraxy(i, 2);
+		printf("%c", 205);// Linea horizontal en ascii
+		iraxy(i, 24);
+		printf("%c", 205);
 	}
-		for (i = 3; i < 24; i++) //Limites del juego por la izquierda y la derecha
-		{
-			iraxy(2, i);
-			printf("%c", 186);//186 linea vertical en ascii
-			iraxy(37, i);
-			printf("%c", 186);
-		}
-		iraxy(2, 2); //Ahora vamos a pintar las esquinas
-		printf("%c", 201);
-		iraxy(2, 24);
-		printf("%c", 200);
-		iraxy(37, 2);
-		printf("%c", 187);
-		iraxy(37, 24);
-		printf("%c", 188);
+	for (i = 3; i < 24; i++) //Limites del juego por la izquierda y la derecha
+	{
+		iraxy(2, i);
+		printf("%c", 186);//186 linea vertical en ascii
+		iraxy(37, i);
+		printf("%c", 186);
+	}
+	iraxy(2, 2); //Ahora vamos a pintar las esquinas
+	printf("%c", 201);
+	iraxy(2, 24);
+	printf("%c", 200);
+	iraxy(37, 2);
+	printf("%c", 187);
+	iraxy(37, 24);
+	printf("%c", 188);
 }
 void Marco()
 {
@@ -339,4 +345,4 @@ void Marco()
 		iraxy(35, y); printf("%c", 186);
 	}
 }
-//NOMBRE: Froggie
+//NOMBRE: FroggieA104
