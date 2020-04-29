@@ -1,5 +1,5 @@
 #include <iostream> //entrada y salida de datos genericos
-#include <deque>//organiza los elementos de un tipo determinado en una organizaci髇 lineal    
+#include <deque>//organiza los elementos de un tipo determinado en una organizaci贸n lineal    
 #include <vector> //organiza los elementos de un tipo determinado en una secuencia lineal VECTORES
 #include <conio.h>//entrada y salida de datos para la pantalla
 #include <time.h>//modifica el tiempo
@@ -13,10 +13,13 @@
 
 using namespace std;
 
+void OculCurs();
+void Marco();
+
 class cLane //pantalla
 {
 private:
-	deque<bool>cars;//vector booleano que indica la posici髇 de los coches
+	deque<bool>cars;//vector booleano que indica la posici贸n de los coches
 	bool right; //variable booleana
 public:
 	cLane(int width)
@@ -68,7 +71,7 @@ void iraxy(int x, int y)
 }
 
 void pintar_limites() {
-	int i; //Variable local de la funci髇
+	int i; //Variable local de la funci贸n
 	for (i = 2; i < 37; i++) //Limites del juego por arriba y abajo
 	{
 		iraxy(i, 2);
@@ -93,11 +96,11 @@ void pintar_limites() {
 	printf("%c", 188);
 }
 
-class cPlayer //posici髇 del jugador
+class cPlayer //posici贸n del jugador
 {
 public:
 	int x, y;
-	cPlayer(int width) //posici髇 inicial del jugador
+	cPlayer(int width) //posici贸n inicial del jugador
 	{
 		x = width / 2 +2;
 		y = 20;
@@ -114,7 +117,7 @@ private:
 	cPlayer* player; //llama a la clase player (jugador)
 	vector<cLane*> map; // vector que llama a la clase y le pone como variable referenciada el mapa
 public:
-	cGame(int w = 20, int h = 10)// condiciones inicales del tama駉 del juego
+	cGame(int w = 20, int h = 10)// condiciones inicales del tama帽o del juego
 	{
 		numberofLanes = h;
 		width = w;
@@ -217,6 +220,100 @@ public:
 	}
 };
 
+int main()
+{
+	OculCurs(); Marco();
+	//srand(time(NULL));
+	int y = 12, x = 10;
+	char tecla;
+	bool start = TRUE, p1 = 1, p2 = 1, back=1;
+	iraxy(10, 9); printf("FroggieA104");
+	iraxy(17, 12); printf("Instrucciones");
+	iraxy(17, 13); printf("Start");
+	iraxy(17, 14); printf("EXIT");
+	iraxy(13, y); printf("==>");
+	while (start != 0)//EMPIEZA EL JUEGO
+	{
+		tecla = _getch();
+		iraxy(13, y); printf("   ");
+		if (tecla == 80) y++;
+		if (tecla == 72) y--;
+		if (y < 12 || y>14)
+		{
+			if (y < 12) y = 14;
+			else y = 14;
+		}
+		iraxy(13, y); printf("==>");
+		if (tecla == 13)//si pulso ENTER
+		{
+			switch (y)
+			{
+			case 12: //en la opcion INSTRUCCIONES
+				system("cls"); Marco();//DEBE IMPRIMIRSE LE FICHERO INTRUCCIONES
+				iraxy(26, 15); printf("Start");
+				iraxy(26, 16); printf("_____");
+				//Instrucciones(tecla);
+				char ini; ini = _getch();
+				if (ini == 13)
+				{
+					system("cls");
+					cGame game(35, 24);
+					game.Run();
+				}
+				break;
+			case 13://En la opcion START
+				system("cls");
+				cGame game(35, 24);
+				game.Run(); //void Contador(%score)
+				break;
+			case 14://En ls opcion exit
+				system("cls"); Marco(); iraxy(5, 7);
+				printf("Seguro que quiere salir?");
+				iraxy(11, 14); printf("Si");
+				iraxy(21, 14); printf("No");
+				iraxy(10, 15); printf("____");
+				while (p2 != 0)
+				{
+					tecla = _getch();
+					iraxy(x, 15); printf("    ");
+					if (tecla == 77) x += 10;
+					if (tecla == 75) x -= 10;
+					if (x < 10 || x > 20)
+					{
+						if (x < 10) x = 20;
+						else x = 20;
+					}
+					iraxy(x, 15); printf("____");
+					if (tecla == 13)
+					{
+						if (x == 10) { p2 = FALSE; start = 0; }
+					}
+				}
+				break;
+			}
+		}
+	}
+	return 0;
+}
+void Marco()
+{
+	int x, y;
+	FijarCoord(0, 0); printf("%c", 201);
+	FijarCoord(0, 20); printf("%c", 200);
+	FijarCoord(35, 0); printf("%c", 187);
+	FijarCoord(35, 20); printf("%c", 188);
+	for (x = 1; x < 35; x++)
+	{
+		FijarCoord(x, 0); printf("%c", 205);
+		FijarCoord(x, 20); printf("%c", 205);
+	}
+	for (y = 1; y < 20; y++)
+	{
+		FijarCoord(0, y); printf("%c", 186);
+		FijarCoord(35, y); printf("%c", 186);
+	}
+}
+
 void OculCurs()
 {
 	HANDLE hcon;
@@ -225,14 +322,4 @@ void OculCurs()
 	A.bVisible = FALSE;
 	A.dwSize = 10;
 	SetConsoleCursorInfo(hcon, &A);//aparicion del cursor
-}
-
-int main()
-{
-	OculCurs();
-	//srand(time(NULL));
-	cGame game(35, 24);
-	game.Run();
-	cout << "Game Over" << endl;
-	return 0;
 }
