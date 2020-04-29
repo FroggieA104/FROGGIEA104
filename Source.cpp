@@ -10,6 +10,7 @@
 #define DOWN 80
 #define RIGHT 77
 #define  LEFT 75
+#define ENTER 13
 
 using namespace std;
 
@@ -236,15 +237,15 @@ int main()
 	{
 		tecla = _getch();
 		iraxy(13, y); printf("   ");
-		if (tecla == 80) y++;
-		if (tecla == 72) y--;
+		if (tecla == DOWN) y++;
+		if (tecla == UP) y--;
 		if (y < 12 || y>14)
 		{
 			if (y < 12) y = 14;
 			else y = 14;
 		}
 		iraxy(13, y); printf("==>");
-		if (tecla == 13)//si pulso ENTER
+		if (tecla == ENTER)//si pulso ENTER
 		{
 			switch (y)
 			{
@@ -254,7 +255,7 @@ int main()
 				iraxy(26, 16); printf("_____");
 				//Instrucciones(tecla);
 				char ini; ini = _getch();
-				if (ini == 13)
+				if (ini == ENTER)
 				{
 					system("cls");
 					cGame game(35, 24);
@@ -276,15 +277,15 @@ int main()
 				{
 					tecla = _getch();
 					iraxy(x, 15); printf("    ");
-					if (tecla == 77) x += 10;
-					if (tecla == 75) x -= 10;
+					if (tecla == RIGHT) x += 10;
+					if (tecla == LEFT) x -= 10;
 					if (x < 10 || x > 20)
 					{
 						if (x < 10) x = 20;
 						else x = 20;
 					}
 					iraxy(x, 15); printf("____");
-					if (tecla == 13)
+					if (tecla == ENTER)
 					{
 						if (x == 10) { p2 = FALSE; start = 0; }
 					}
