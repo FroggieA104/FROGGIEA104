@@ -11,11 +11,13 @@
 #define RIGHT 77
 #define  LEFT 75
 #define ENTER 13
+#define N 5
 
 using namespace std;
 
 void OculCurs();
 void Marco();
+void Contador(char, int*);
 
 class cLane //pantalla
 {
@@ -214,9 +216,14 @@ public:
 	{
 		while (!quit)//continuara mientras no se quite el juego
 		{
+			Marco();
+			iraxy(5,3); printf("Introduce tu nombre: ");
+			scanf_s("%s", &cad[N]);
+			system("cls");
 			Input();
 			Draw();
 			Logic();
+			Contador(&cad, score);
 		}
 	}
 };
@@ -226,7 +233,7 @@ int main()
 	OculCurs(); Marco();
 	//srand(time(NULL));
 	int y = 12, x = 10;
-	char tecla;
+	char tecla, cad[N];
 	bool start = TRUE, p1 = 1, p2 = 1, back=1;
 	iraxy(10, 9); printf("FroggieA104");
 	iraxy(17, 12); printf("Instrucciones");
@@ -250,10 +257,10 @@ int main()
 			switch (y)
 			{
 			case 12: //en la opcion INSTRUCCIONES
-				system("cls"); Marco();//DEBE IMPRIMIRSE LE FICHERO INTRUCCIONES
+				system("cls"); Marco();//DEBE IMPRIMIRSE EL FICHERO INTRUCCIONES
 				iraxy(26, 15); printf("Start");
 				iraxy(26, 16); printf("_____");
-				//Instrucciones(tecla);
+				//Instrucciones();
 				char ini; ini = _getch();
 				if (ini == ENTER)
 				{
@@ -323,4 +330,13 @@ void OculCurs()
 	A.bVisible = FALSE;
 	A.dwSize = 10;
 	SetConsoleCursorInfo(hcon, &A);//aparicion del cursor
+}
+
+void Contador(char cad[], int *puntos)
+{
+	FILE* ranking;
+	errno_t R;
+	R=fopen_s(&ranking, "Ranking.txt", "a+");
+	fprintf("%s\t%d",cad, (*puntos));
+	//leer el ficher y ordenar con el metrodo de la burbuja
 }
