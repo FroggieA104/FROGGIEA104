@@ -22,8 +22,10 @@
 #define BLANCO_F   "\x1b[47m"
 
 void OculCurs();
+void iraxy(int, int);
 void Marco();
-void Contador(char, int*);
+void pintar_limites();
+void Contador(char*, int*);
 
 using namespace std;
 
@@ -68,43 +70,6 @@ public:
 	
 };
 
-void iraxy(int x, int y)
-{
-	HANDLE coger;
-	coger = GetStdHandle(STD_OUTPUT_HANDLE);
-	COORD posicion;
-	posicion.X = x;
-	posicion.Y = y;
-	SetConsoleCursorPosition(coger, posicion);
-}
-
-void pintar_limites() {
-	int i; //Variable local de la función
-	for (i = 2; i < 37; i++) //Limites del juego por arriba y abajo
-	{
-		iraxy(i, 2);
-		printf(AMARILLO_T "%c", 205);// Linea horizontal en ascii
-		iraxy(i, 25);
-		printf(AMARILLO_T"%c", 205);
-	}
-	for (i = 3; i < 25; i++) //Limites del juego por la izquierda y la derecha
-	{
-		iraxy(2, i);
-		printf(AMARILLO_T"%c", 186);//186 linea vertical en ascii
-		iraxy(37, i);
-		printf(AMARILLO_T"%c", 186);
-	}
-	iraxy(2, 2); //Ahora vamos a pintar las esquinas
-	printf(AMARILLO_T"%c", 201);
-	iraxy(2, 25);
-	printf(AMARILLO_T"%c", 200);
-	iraxy(37, 2);
-	printf(AMARILLO_T"%c", 187);
-	iraxy(37, 25);
-	printf(AMARILLO_T"%c", 188);
-	
-}
-
 class Player //posición del jugador
 {
 public:
@@ -120,9 +85,8 @@ class Game
 {
 private:
 	bool quit; //indica cuando se va a terminar el bucle
-	int numberofLanes; //numero de lineas
-	int width; //ancho del mapa
-	int score;//puntuacion
+	int numberofLanes, width, score;
+	char cad[N];
 	Player* player; //llama a la clase player (jugador)
 	vector<Lane*> map; // vector que llama a la clase y le pone como variable referenciada el mapa
 public:
@@ -135,7 +99,7 @@ public:
 		{
 			map.push_back(new cLane(width)); //agrega en el mapa lo que hay en la clase e indica el ancho maximo
 		}
-		player = new cPlayer(width);
+		player = new Player(width);
 	}
 	~Game()//destructor del juego
 	{
@@ -228,18 +192,18 @@ public:
 			Input();
 			Draw();
 			Logic();
-			Contador(&cad, score);
+			Contador(&cad[N], &score);
 		}
 	}
 };
 
 int main()
 {
+	int y = 12, x = 10;
+	char tecla, ini;
+	bool start = TRUE, p1 = 1, p2 = 1;
 	OculCurs();
 	Marco();
-	int y = 12, x = 10;
-	char tecla, cad[N];
-	bool start = TRUE, p1 = 1, p2 = 1, back=1;
 	iraxy(10, 9); printf("FroggieA104");
 	iraxy(17, 12); printf("Instrucciones");
 	iraxy(17, 13); printf("Start");
@@ -270,15 +234,14 @@ int main()
 				if (ini == ENTER)
 				{
 					system("cls");
-					cGame game(35, 24);
+					Game game(35, 24);
 					game.Run();
 				}
 				break;
 			case 13://En la opcion START
 				system("cls");
-				cGame game(34, 23);
+				Game game(34, 23);
 				game.Run(); //void Contador(%score)
-				cout << "Game Over" << endl;
 				break;
 			case 14://En ls opcion exit
 				system("cls"); Marco(); iraxy(5, 7);
@@ -319,23 +282,61 @@ void OculCurs()
 	SetConsoleCursorInfo(hcon, &A);//aparicion del cursor
 }
 
+void iraxy(int x, int y)
+{
+	HANDLE coger;
+	coger = GetStdHandle(STD_OUTPUT_HANDLE);
+	COORD posicion;
+	posicion.X = x;
+	posicion.Y = y;
+	SetConsoleCursorPosition(coger, posicion);
+}
+
 void Marco()
 {
 	int x, y;
-	FijarCoord(0, 0); printf("%c", 201);
-	FijarCoord(0, 20); printf("%c", 200);
-	FijarCoord(35, 0); printf("%c", 187);
-	FijarCoord(35, 20); printf("%c", 188);
+	iraxy(0, 0); printf("%c", 201);
+	iraxy(0, 20); printf("%c", 200);
+	iraxy(35, 0); printf("%c", 187);
+	iraxy(35, 20); printf("%c", 188);
 	for (x = 1; x < 35; x++)
 	{
-		FijarCoord(x, 0); printf("%c", 205);
-		FijarCoord(x, 20); printf("%c", 205);
+		iraxy(x, 0); printf("%c", 205);
+		iraxy(x, 20); printf("%c", 205);
 	}
 	for (y = 1; y < 20; y++)
 	{
-		FijarCoord(0, y); printf("%c", 186);
-		FijarCoord(35, y); printf("%c", 186);
+		iraxy(0, y); printf("%c", 186);
+		iraxy(35, y); printf("%c", 186);
 	}
+}
+
+void pintar_limites()
+{
+	int i; //Variable local de la función
+	for (i = 2; i < 37; i++) //Limites del juego por arriba y abajo
+	{
+		iraxy(i, 2);
+		printf(AMARILLO_T "%c", 205);// Linea horizontal en ascii
+		iraxy(i, 25);
+		printf(AMARILLO_T"%c", 205);
+	}
+	for (i = 3; i < 25; i++) //Limites del juego por la izquierda y la derecha
+	{
+		iraxy(2, i);
+		printf(AMARILLO_T"%c", 186);//186 linea vertical en ascii
+		iraxy(37, i);
+		printf(AMARILLO_T"%c", 186);
+	}
+	iraxy(2, 2); //Ahora vamos a pintar las esquinas
+	printf(AMARILLO_T"%c", 201);
+	iraxy(2, 25);
+	printf(AMARILLO_T"%c", 200);
+	iraxy(37, 2);
+	printf(AMARILLO_T"%c", 187);
+	iraxy(37, 25);
+	printf(AMARILLO_T"%c", 188);
+
 }
 
 void Contador(char cad[], int *puntos)
@@ -343,6 +344,6 @@ void Contador(char cad[], int *puntos)
 	FILE* ranking;
 	errno_t R;
 	R=fopen_s(&ranking, "Ranking.txt", "a+");
-	fprintf("%s\t%d",cad, (*puntos));
+	//fprintf(cad,(*puntos));
 	//leer el ficher y ordenar con el metrodo de la burbuja
 }
