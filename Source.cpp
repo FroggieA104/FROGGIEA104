@@ -5,6 +5,7 @@
 #include <time.h>//modifica el tiempo
 #include <Windows.h> //programacion en windows
 #include <stdio.h>
+#include <string.h>
 
 #define UP 72
 #define DOWN 80
@@ -25,7 +26,7 @@ void OculCurs();
 void iraxy(int, int);
 void Marco();
 void pintar_limites();
-void Contador(char*, int*);
+//void Contador(char*, int*);
 
 using namespace std;
 
@@ -35,7 +36,7 @@ private:
 	deque<bool>cars;//vector booleano que indica la posición de los coches
 	bool right; //variable booleana
 public:
-	cLane(int width)
+	Lane(int width)
 	{
 		for (int i = 0; i < width; i++)
 		{
@@ -97,7 +98,7 @@ public:
 		quit = false; //no se quita el juego accidentalmente
 		for (int i = 0; i < numberofLanes; i++)
 		{
-			map.push_back(new cLane(width)); //agrega en el mapa lo que hay en la clase e indica el ancho maximo
+			map.push_back(new Lane(width)); //agrega en el mapa lo que hay en la clase e indica el ancho maximo
 		}
 		player = new Player(width);
 	}
@@ -173,7 +174,7 @@ public:
 		                Sleep(20);
 			}
 		}
-		if (player->y == 7)//aumenta la puntuacion
+		if (player->y == 10)//aumenta la puntuacion
 		{
 			score++;
 			player->y = numberofLanes -1;
@@ -185,14 +186,14 @@ public:
 	{
 		while (!quit)//continuara mientras no se quite el juego
 		{
-			Marco();
+			/*Marco();
 			iraxy(5,3); printf("Introduce tu nombre: ");
-			scanf_s("%s", &cad[N]);
-			system("cls");
+			gets_s(cad, N);
+			system("cls");*/
 			Input();
 			Draw();
 			Logic();
-			Contador(&cad[N], &score);
+			//Contador(&cad[N], &score);
 		}
 	}
 };
@@ -226,6 +227,7 @@ int main()
 			switch (y)
 			{
 			case 12: //en la opcion INSTRUCCIONES
+			{
 				system("cls"); Marco();//DEBE IMPRIMIRSE EL FICHERO INTRUCCIONES
 				iraxy(26, 15); printf("Start");
 				iraxy(26, 16); printf("_____");
@@ -238,12 +240,16 @@ int main()
 					game.Run();
 				}
 				break;
-			case 13://En la opcion START
+			}
+			case 13: //En la opcion START
+			{
 				system("cls");
-				Game game(34, 23);
-				game.Run(); //void Contador(%score)
+				Game game(35, 24);
+				game.Run();
 				break;
+			}
 			case 14://En ls opcion exit
+			{
 				system("cls"); Marco(); iraxy(5, 7);
 				printf("Seguro que quiere salir?");
 				iraxy(11, 14); printf("Si");
@@ -267,6 +273,7 @@ int main()
 					}
 				}
 				break;
+			}
 			}
 		}
 	}
@@ -339,11 +346,11 @@ void pintar_limites()
 
 }
 
-void Contador(char cad[], int *puntos)
+/*void Contador(char cad[], int *puntos)
 {
 	FILE* ranking;
 	errno_t R;
 	R=fopen_s(&ranking, "Ranking.txt", "a+");
 	//fprintf(cad,(*puntos));
 	//leer el ficher y ordenar con el metrodo de la burbuja
-}
+}*/
