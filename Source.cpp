@@ -12,12 +12,19 @@
 #define  LEFT 75
 #define ENTER 13
 
+
+#define RESET_COLOR "\x1b[0m"
+#define ROJO_T "\x1b[31m"
+#define VERDE_T "\x1b[32m"
+#define AMARILLO_T "\x1b[33m"
+#define AZUL_T "\x1b[34m"
+#define MAGENTA_T "\x1b[35m"
+#define CYAN_T "\x1b[36m"
+#define BLANCO_F   "\x1b[47m"
+
 using namespace std;
 
-void OculCurs();
-void Marco();
-
-class cLane //pantalla
+class Lane //pantalla
 {
 private:
 	deque<bool>cars;//vector booleano que indica la posición de los coches
@@ -43,7 +50,7 @@ public:
 		}
 		else
 		{
-			if (rand() % 10 == 1)
+			if (rand() % 15 == 1)
 			{
 				cars.push_back(true);
 			}
@@ -55,10 +62,7 @@ public:
 	{
 		return cars[pos] ;
 	}
-	void Changedirection() //cambia la direccion de los coches
-	{
-		right != right;
-	}
+	
 };
 
 void iraxy(int x, int y)
@@ -76,49 +80,68 @@ void pintar_limites() {
 	for (i = 2; i < 37; i++) //Limites del juego por arriba y abajo
 	{
 		iraxy(i, 2);
-		printf("%c", 205);// Linea horizontal en ascii
+		printf(AMARILLO_T "%c", 205);// Linea horizontal en ascii
 		iraxy(i, 25);
-		printf("%c", 205); 
+		printf(AMARILLO_T"%c", 205);
 	}
 	for (i = 3; i < 25; i++) //Limites del juego por la izquierda y la derecha
 	{
 		iraxy(2, i);
-		printf("%c", 186);//186 linea vertical en ascii
+		printf(AMARILLO_T"%c", 186);//186 linea vertical en ascii
 		iraxy(37, i);
-		printf("%c", 186);
+		printf(AMARILLO_T"%c", 186);
 	}
 	iraxy(2, 2); //Ahora vamos a pintar las esquinas
-	printf("%c", 201);
+	printf(AMARILLO_T"%c", 201);
 	iraxy(2, 25);
-	printf("%c", 200);
+	printf(AMARILLO_T"%c", 200);
 	iraxy(37, 2);
-	printf("%c", 187);
+	printf(AMARILLO_T"%c", 187);
 	iraxy(37, 25);
-	printf("%c", 188);
+	printf(AMARILLO_T"%c", 188);
+	
+}
+void Marco()
+{
+	int x, y;
+	FijarCoord(0, 0); printf("%c", 201);
+	FijarCoord(0, 20); printf("%c", 200);
+	FijarCoord(35, 0); printf("%c", 187);
+	FijarCoord(35, 20); printf("%c", 188);
+	for (x = 1; x < 35; x++)
+	{
+		FijarCoord(x, 0); printf("%c", 205);
+		FijarCoord(x, 20); printf("%c", 205);
+	}
+	for (y = 1; y < 20; y++)
+	{
+		FijarCoord(0, y); printf("%c", 186);
+		FijarCoord(35, y); printf("%c", 186);
+	}
 }
 
-class cPlayer //posición del jugador
+class Player //posición del jugador
 {
 public:
 	int x, y;
-	cPlayer(int width) //posición inicial del jugador
+	Player(int width) //posición inicial del jugador
 	{
-		x = width / 2 +2;
-		y = 20;
+		x = (width / 2) +1;
+		y = 22;
 	}
 };
 
-class cGame
+class Game
 {
 private:
 	bool quit; //indica cuando se va a terminar el bucle
 	int numberofLanes; //numero de lineas
 	int width; //ancho del mapa
 	int score;//puntuacion
-	cPlayer* player; //llama a la clase player (jugador)
-	vector<cLane*> map; // vector que llama a la clase y le pone como variable referenciada el mapa
+	Player* player; //llama a la clase player (jugador)
+	vector<Lane*> map; // vector que llama a la clase y le pone como variable referenciada el mapa
 public:
-	cGame(int w = 20, int h = 10)// condiciones inicales del tamaño del juego
+	Game(int w = 20, int h = 10)// condiciones inicales del tamaño del juego
 	{
 		numberofLanes = h;
 		width = w;
@@ -129,12 +152,12 @@ public:
 		}
 		player = new cPlayer(width);
 	}
-	~cGame()//destructor del juego
+	~Game()//destructor del juego
 	{
 		delete player;
 		for (int i = 0; i < map.size(); i++)
 		{
-			cLane* current = map.back(); //
+			Lane* current = map.back(); //
 			map.pop_back();//elimina el mapa
 			delete current;
 		}
@@ -148,25 +171,22 @@ public:
 		{
 			for (int j =0; j < width; j++)//ancho
 			{
-				if (i == 0 && (j == 0 || j == width - 1))
-					printf(" ");
-				if (i == 4 && (j == 11))
-					printf("Puntuacion: %d", score);
-				if (i == 4 && (j == 5))
-					printf("FROGGIEA104");
-				if (i == 6 && j==width/2)
-					printf("Meta");
-				if (i == 7 && j ==5)
-					printf("###");
-				if (i == 7 && j== width-6 )
-					printf("###");
-				if (map[i]->CheckPos(j) && i >7 && i < numberofLanes - 1)
-					printf(".");
+				if (i == 5 && (j == width/3 +3))
+					printf(ROJO_T"FROGGIEA104" RESET_COLOR );
+				if (i == 7 && (j == width-8))
+					printf(AZUL_T"SCORE: %d" RESET_COLOR, score); 
+				if (i == 9 && j==width/2)
+					printf("Meta" RESET_COLOR);
+				if (i == 10 && j ==5)
+					printf("###" RESET_COLOR);
+				if (i == 10 && j== width-6 )
+					printf("###" RESET_COLOR);
+				if (map[i]->CheckPos(j) && i >10 && i < numberofLanes - 1)
+					printf(CYAN_T "." RESET_COLOR);
 				else if (player->x == j && player->y == i)
-					printf("!!");
+					printf(VERDE_T "!0!" RESET_COLOR);
 				else
 					printf(" ");
-
 			}
 			cout << endl; //deja de imprimirlo cuando se muere
 		}
@@ -193,13 +213,15 @@ public:
 	{
 		for (int i = 1; i < numberofLanes - 1; i++)
 		{
-			if (rand() % 10 == 1)//genera el mov del plano
+			if (rand() % 5 == 1)//genera el mov del plano
 				map[i]->Move();
 			if (map[i]->CheckPos(player->x) && player->y == i)//choque del coche y del personaje
 			{
 				quit = false;
 				score = 0;
 				player->y = numberofLanes - 1;
+				player->x = ( width  / 2) +1;
+		                Sleep(20);
 			}
 		}
 		if (player->y == 7)//aumenta la puntuacion
@@ -207,7 +229,7 @@ public:
 			score++;
 			player->y = numberofLanes -1;
 			printf("\x07");
-			map[rand() % numberofLanes]->Changedirection();
+			
 		}
 	}
 	void Run()
@@ -221,10 +243,20 @@ public:
 	}
 };
 
+void OculCurs()
+{
+	HANDLE hcon;
+	hcon = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO A; //estructura con las caracteristicas del cursor
+	A.bVisible = FALSE;
+	A.dwSize = 10;
+	SetConsoleCursorInfo(hcon, &A);//aparicion del cursor
+}
+
 int main()
 {
-	OculCurs(); Marco();
-	//srand(time(NULL));
+	OculCurs();
+	Marco();
 	int y = 12, x = 10;
 	char tecla;
 	bool start = TRUE, p1 = 1, p2 = 1, back=1;
@@ -264,8 +296,9 @@ int main()
 				break;
 			case 13://En la opcion START
 				system("cls");
-				cGame game(35, 24);
+				cGame game(34, 23);
 				game.Run(); //void Contador(%score)
+				cout << "Game Over" << endl;
 				break;
 			case 14://En ls opcion exit
 				system("cls"); Marco(); iraxy(5, 7);
@@ -296,31 +329,4 @@ int main()
 	}
 	return 0;
 }
-void Marco()
-{
-	int x, y;
-	FijarCoord(0, 0); printf("%c", 201);
-	FijarCoord(0, 20); printf("%c", 200);
-	FijarCoord(35, 0); printf("%c", 187);
-	FijarCoord(35, 20); printf("%c", 188);
-	for (x = 1; x < 35; x++)
-	{
-		FijarCoord(x, 0); printf("%c", 205);
-		FijarCoord(x, 20); printf("%c", 205);
-	}
-	for (y = 1; y < 20; y++)
-	{
-		FijarCoord(0, y); printf("%c", 186);
-		FijarCoord(35, y); printf("%c", 186);
-	}
-}
 
-void OculCurs()
-{
-	HANDLE hcon;
-	hcon = GetStdHandle(STD_OUTPUT_HANDLE);
-	CONSOLE_CURSOR_INFO A; //estructura con las caracteristicas del cursor
-	A.bVisible = FALSE;
-	A.dwSize = 10;
-	SetConsoleCursorInfo(hcon, &A);//aparicion del cursor
-}
