@@ -11,8 +11,7 @@
 #define RIGHT 77
 #define  LEFT 75
 #define ENTER 13
-
-
+#define N 5
 #define RESET_COLOR "\x1b[0m"
 #define ROJO_T "\x1b[31m"
 #define VERDE_T "\x1b[32m"
@@ -21,6 +20,10 @@
 #define MAGENTA_T "\x1b[35m"
 #define CYAN_T "\x1b[36m"
 #define BLANCO_F   "\x1b[47m"
+
+void OculCurs();
+void Marco();
+void Contador(char, int*);
 
 using namespace std;
 
@@ -100,24 +103,6 @@ void pintar_limites() {
 	iraxy(37, 25);
 	printf(AMARILLO_T"%c", 188);
 	
-}
-void Marco()
-{
-	int x, y;
-	FijarCoord(0, 0); printf("%c", 201);
-	FijarCoord(0, 20); printf("%c", 200);
-	FijarCoord(35, 0); printf("%c", 187);
-	FijarCoord(35, 20); printf("%c", 188);
-	for (x = 1; x < 35; x++)
-	{
-		FijarCoord(x, 0); printf("%c", 205);
-		FijarCoord(x, 20); printf("%c", 205);
-	}
-	for (y = 1; y < 20; y++)
-	{
-		FijarCoord(0, y); printf("%c", 186);
-		FijarCoord(35, y); printf("%c", 186);
-	}
 }
 
 class Player //posición del jugador
@@ -236,29 +221,24 @@ public:
 	{
 		while (!quit)//continuara mientras no se quite el juego
 		{
+			Marco();
+			iraxy(5,3); printf("Introduce tu nombre: ");
+			scanf_s("%s", &cad[N]);
+			system("cls");
 			Input();
 			Draw();
 			Logic();
+			Contador(&cad, score);
 		}
 	}
 };
-
-void OculCurs()
-{
-	HANDLE hcon;
-	hcon = GetStdHandle(STD_OUTPUT_HANDLE);
-	CONSOLE_CURSOR_INFO A; //estructura con las caracteristicas del cursor
-	A.bVisible = FALSE;
-	A.dwSize = 10;
-	SetConsoleCursorInfo(hcon, &A);//aparicion del cursor
-}
 
 int main()
 {
 	OculCurs();
 	Marco();
 	int y = 12, x = 10;
-	char tecla;
+	char tecla, cad[N];
 	bool start = TRUE, p1 = 1, p2 = 1, back=1;
 	iraxy(10, 9); printf("FroggieA104");
 	iraxy(17, 12); printf("Instrucciones");
@@ -282,10 +262,10 @@ int main()
 			switch (y)
 			{
 			case 12: //en la opcion INSTRUCCIONES
-				system("cls"); Marco();//DEBE IMPRIMIRSE LE FICHERO INTRUCCIONES
+				system("cls"); Marco();//DEBE IMPRIMIRSE EL FICHERO INTRUCCIONES
 				iraxy(26, 15); printf("Start");
 				iraxy(26, 16); printf("_____");
-				//Instrucciones(tecla);
+				//Instrucciones();
 				char ini; ini = _getch();
 				if (ini == ENTER)
 				{
@@ -329,4 +309,40 @@ int main()
 	}
 	return 0;
 }
+void OculCurs()
+{
+	HANDLE hcon;
+	hcon = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO A; //estructura con las caracteristicas del cursor
+	A.bVisible = FALSE;
+	A.dwSize = 10;
+	SetConsoleCursorInfo(hcon, &A);//aparicion del cursor
+}
 
+void Marco()
+{
+	int x, y;
+	FijarCoord(0, 0); printf("%c", 201);
+	FijarCoord(0, 20); printf("%c", 200);
+	FijarCoord(35, 0); printf("%c", 187);
+	FijarCoord(35, 20); printf("%c", 188);
+	for (x = 1; x < 35; x++)
+	{
+		FijarCoord(x, 0); printf("%c", 205);
+		FijarCoord(x, 20); printf("%c", 205);
+	}
+	for (y = 1; y < 20; y++)
+	{
+		FijarCoord(0, y); printf("%c", 186);
+		FijarCoord(35, y); printf("%c", 186);
+	}
+}
+
+void Contador(char cad[], int *puntos)
+{
+	FILE* ranking;
+	errno_t R;
+	R=fopen_s(&ranking, "Ranking.txt", "a+");
+	fprintf("%s\t%d",cad, (*puntos));
+	//leer el ficher y ordenar con el metrodo de la burbuja
+}
