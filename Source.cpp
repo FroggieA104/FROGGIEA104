@@ -1,9 +1,9 @@
-#include <iostream> //entrada y salida de datos genericos
-#include <deque>//organiza los elementos de un tipo determinado en una organización lineal    
-#include <vector> //organiza los elementos de un tipo determinado en una secuencia lineal VECTORES
-#include <conio.h>//entrada y salida de datos para la pantalla
-#include <time.h>//modifica el tiempo
-#include <Windows.h> //programacion en windows
+#include <iostream> 
+#include <deque>
+#include <vector>
+#include <conio.h>
+#include <time.h>
+#include <Windows.h> 
 #include <stdio.h>
 #include <string.h>
 
@@ -20,7 +20,7 @@
 #define AZUL_T "\x1b[34m"
 #define MAGENTA_T "\x1b[35m"
 #define CYAN_T "\x1b[36m"
-#define BLANCO_F   "\x1b[47m"
+#define BLANCO_F "\x1b[47m"
 
 void OculCurs();
 void iraxy(int, int);
@@ -66,9 +66,9 @@ public:
 	}
 	bool CheckPos(int pos)// funcion que indica donde estan los coches
 	{
-		return cars[pos] ;
+		return cars[pos];
 	}
-	
+
 };
 
 class Player //posición del jugador
@@ -77,8 +77,8 @@ public:
 	int x, y;
 	Player(int width) //posición inicial del jugador
 	{
-		x = (width / 2) +1;
-		y = 22;
+		x = (width / 2) + 1;
+		y = 23;
 	}
 };
 
@@ -102,7 +102,7 @@ public:
 		}
 		player = new Player(width);
 	}
-	~Game()//destructor del juego
+	/*~Game()//destructor del juego
 	{
 		delete player;
 		for (int i = 0; i < map.size(); i++)
@@ -111,36 +111,36 @@ public:
 			map.pop_back();//elimina el mapa
 			delete current;
 		}
-	}
+	}*/
 	void Draw()//dibuja todo 
 	{
 		pintar_limites();
 		system("cls");//limpia la pantalla cada vez que se mueven los coches(no se peta)
-		
+
 		for (int i = 0; i < numberofLanes; i++) //largo
 		{
-			for (int j =0; j < width; j++)//ancho
+			for (int j = 0; j < width; j++)//ancho
 			{
-				if (i == 5 && (j == width/3 +3))
-					printf(ROJO_T"FROGGIEA104" RESET_COLOR );
-				if (i == 7 && (j == width-8))
-					printf(AZUL_T"SCORE: %d" RESET_COLOR, score); 
-				if (i == 9 && j==width/2)
+				if (i == 5 && (j == width / 3 + 3))
+					printf(ROJO_T"FROGGIEA104" RESET_COLOR);
+				if (i == 7 && (j == width - 8))
+					printf(AZUL_T"SCORE: %d" RESET_COLOR, score);
+				if (i == 9 && j == width / 2)
 					printf("Meta" RESET_COLOR);
-				if (i == 10 && j ==5)
+				if (i == 10 && j == 5)
 					printf("###" RESET_COLOR);
-				if (i == 10 && j== width-6 )
+				if (i == 10 && j == width - 6)
 					printf("###" RESET_COLOR);
-				if (map[i]->CheckPos(j) && i >10 && i < numberofLanes - 1)
+				if (map[i]->CheckPos(j)&& j> 4 && i > 10 && i < numberofLanes - 1)
 					printf(CYAN_T "." RESET_COLOR);
 				else if (player->x == j && player->y == i)
 					printf(VERDE_T "!0!" RESET_COLOR);
 				else
 					printf(" ");
 			}
-			cout << endl; //deja de imprimirlo cuando se muere
+			cout << endl; //deja de imprimirlo cuando muere el codigo
 		}
-		
+
 	}
 	void Input() //controles del jugador
 	{
@@ -161,25 +161,39 @@ public:
 	}
 	void Logic()//indica la logica del movimiento, es decir, como se desarrolla el juego
 	{
+		char current = _getch();
 		for (int i = 1; i < numberofLanes - 1; i++)
 		{
 			if (rand() % 5 == 1)//genera el mov del plano
 				map[i]->Move();
 			if (map[i]->CheckPos(player->x) && player->y == i)//choque del coche y del personaje
-			{
-				quit = false;
+			{	
+				for (int i = 0; i < numberofLanes; i++) //largo
+				{
+					for (int j = 0; j < width; j++)//ancho
+					{
+						system("cls");
+						printf("\n\n\n\n\n\n\t\t__________ \n\n\t\tGAME OVER\n\t\t__________  " );
+					}
+					cout << endl;
+				}
+				
+				//llamar aqui al fichero
+					
+				
+				/*quit = false;
 				score = 0;
 				player->y = numberofLanes - 1;
-				player->x = ( width  / 2) +1;
-		                Sleep(20);
+				player->x = (width / 2) + 1;
+				*/
 			}
 		}
 		if (player->y == 10)//aumenta la puntuacion
 		{
 			score++;
-			player->y = numberofLanes -1;
+			player->y = numberofLanes - 1;
 			printf("\x07");
-			
+
 		}
 	}
 	void Run()
@@ -205,11 +219,11 @@ int main()
 	bool start = TRUE, p1 = 1, p2 = 1;
 	OculCurs();
 	Marco();
-	iraxy(10, 9); printf("FroggieA104");
-	iraxy(17, 12); printf("Instrucciones");
-	iraxy(17, 13); printf("Start");
-	iraxy(17, 14); printf("EXIT");
-	iraxy(13, y); printf("==>");
+	iraxy(10, 9); printf(ROJO_T "FroggieA104" RESET_COLOR);
+	iraxy(17, 12); printf(AMARILLO_T "Instrucciones" RESET_COLOR);
+	iraxy(17, 13); printf(VERDE_T "Start" RESET_COLOR);
+	iraxy(17, 14); printf(AZUL_T"EXIT" RESET_COLOR);
+	iraxy(13, y); printf(CYAN_T "==>" RESET_COLOR);
 	while (start != 0)//EMPIEZA EL JUEGO
 	{
 		tecla = _getch();
@@ -221,7 +235,7 @@ int main()
 			if (y < 12) y = 14;
 			else y = 14;
 		}
-		iraxy(13, y); printf("==>");
+		iraxy(13, y); printf(CYAN_T"==>" RESET_COLOR);
 		if (tecla == ENTER)//si pulso ENTER
 		{
 			switch (y)
@@ -229,7 +243,7 @@ int main()
 			case 12: //en la opcion INSTRUCCIONES
 			{
 				system("cls"); Marco();//DEBE IMPRIMIRSE EL FICHERO INTRUCCIONES
-				iraxy(26, 15); printf("Start");
+				iraxy(26, 15); printf(MAGENTA_T "Start" RESET_COLOR);
 				iraxy(26, 16); printf("_____");
 				//Instrucciones();
 				char ini; ini = _getch();
@@ -252,8 +266,8 @@ int main()
 			{
 				system("cls"); Marco(); iraxy(5, 7);
 				printf("Seguro que quiere salir?");
-				iraxy(11, 14); printf("Si");
-				iraxy(21, 14); printf("No");
+				iraxy(11, 14); printf(ROJO_T"Si" RESET_COLOR);
+				iraxy(21, 14); printf(VERDE_T"No" RESET_COLOR);
 				iraxy(10, 15); printf("____");
 				while (p2 != 0)
 				{
@@ -279,6 +293,7 @@ int main()
 	}
 	return 0;
 }
+
 void OculCurs()
 {
 	HANDLE hcon;
@@ -315,6 +330,7 @@ void Marco()
 	{
 		iraxy(0, y); printf("%c", 186);
 		iraxy(35, y); printf("%c", 186);
+		//printf("");
 	}
 }
 
