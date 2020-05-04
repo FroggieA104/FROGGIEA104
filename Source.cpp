@@ -22,11 +22,17 @@
 #define CYAN_T "\x1b[36m"
 #define BLANCO_F "\x1b[47m"
 
+typedef struct {
+	int score;
+	char nombre[N];
+}JUG;
+
 void OculCurs();
 void iraxy(int, int);
 void Marco();
 void pintar_limites();
-//void Contador(char*, int*);
+void contador(char, int*);
+void instrucciones();
 
 using namespace std;
 
@@ -86,11 +92,11 @@ class Game
 {
 private:
 	bool quit; //indica cuando se va a terminar el bucle
-	int numberofLanes, width, score;
-	char cad[N];
+	int numberofLanes, width;
 	Player* player; //llama a la clase player (jugador)
 	vector<Lane*> map; // vector que llama a la clase y le pone como variable referenciada el mapa
 public:
+	JUG P;
 	Game(int w = 20, int h = 10)// condiciones inicales del tamaño del juego
 	{
 		numberofLanes = h;
@@ -102,7 +108,7 @@ public:
 		}
 		player = new Player(width);
 	}
-	/*~Game()//destructor del juego
+	~Game()//destructor del juego
 	{
 		delete player;
 		for (int i = 0; i < map.size(); i++)
@@ -111,7 +117,7 @@ public:
 			map.pop_back();//elimina el mapa
 			delete current;
 		}
-	}*/
+	}
 	void Draw()//dibuja todo 
 	{
 		pintar_limites();
@@ -124,14 +130,14 @@ public:
 				if (i == 5 && (j == width / 3 + 3))
 					printf(ROJO_T"FROGGIEA104" RESET_COLOR);
 				if (i == 7 && (j == width - 8))
-					printf(AZUL_T"SCORE: %d" RESET_COLOR, score);
+					printf(AZUL_T"SCORE: %d" RESET_COLOR, P.score);
 				if (i == 9 && j == width / 2)
 					printf("Meta" RESET_COLOR);
 				if (i == 10 && j == 5)
 					printf("###" RESET_COLOR);
 				if (i == 10 && j == width - 6)
 					printf("###" RESET_COLOR);
-				if (map[i]->CheckPos(j)&& j> 4 && i > 10 && i < numberofLanes - 1)
+				if (map[i]->CheckPos(j) && j > 4 && i > 10 && i < numberofLanes - 1)
 					printf(CYAN_T "." RESET_COLOR);
 				else if (player->x == j && player->y == i)
 					printf(VERDE_T "!0!" RESET_COLOR);
@@ -161,36 +167,24 @@ public:
 	}
 	void Logic()//indica la logica del movimiento, es decir, como se desarrolla el juego
 	{
-		char current = _getch();
 		for (int i = 1; i < numberofLanes - 1; i++)
 		{
 			if (rand() % 5 == 1)//genera el mov del plano
 				map[i]->Move();
 			if (map[i]->CheckPos(player->x) && player->y == i)//choque del coche y del personaje
-			{	
-				for (int i = 0; i < numberofLanes; i++) //largo
-				{
-					for (int j = 0; j < width; j++)//ancho
-					{
-						system("cls");
-						printf("\n\n\n\n\n\n\t\t__________ \n\n\t\tGAME OVER\n\t\t__________  " );
-					}
-					cout << endl;
-				}
-				
-				//llamar aqui al fichero
-					
-				
-				/*quit = false;
-				score = 0;
-				player->y = numberofLanes - 1;
-				player->x = (width / 2) + 1;
-				*/
+			{
+				system("cls"); Marco();
+				iraxy(12, 8); printf("GAME OVER");
+				Sleep(1000);
+				system("cls"); Marco();
+				iraxy(7, 6); printf("Introduce tu nombre:\n");
+				iraxy(7, 8); gets_s(P.nombre, _countof(P.nombre));
+				contador(P.nombre[N], &P.score);//realiza una especie de bucle  (T^T)
 			}
 		}
 		if (player->y == 10)//aumenta la puntuacion
 		{
-			score++;
+			P.score++;
 			player->y = numberofLanes - 1;
 			printf("\x07");
 
@@ -200,14 +194,9 @@ public:
 	{
 		while (!quit)//continuara mientras no se quite el juego
 		{
-			/*Marco();
-			iraxy(5,3); printf("Introduce tu nombre: ");
-			gets_s(cad, N);
-			system("cls");*/
 			Input();
 			Draw();
 			Logic();
-			//Contador(&cad[N], &score);
 		}
 	}
 };
@@ -242,11 +231,11 @@ int main()
 			{
 			case 12: //en la opcion INSTRUCCIONES
 			{
-				system("cls"); Marco();//DEBE IMPRIMIRSE EL FICHERO INTRUCCIONES
+				system("cls"); Marco(); instrucciones();
 				iraxy(26, 15); printf(MAGENTA_T "Start" RESET_COLOR);
 				iraxy(26, 16); printf("_____");
 				//Instrucciones();
-				char ini; ini = _getch();
+				ini = _getch();
 				if (ini == ENTER)
 				{
 					system("cls");
@@ -362,11 +351,67 @@ void pintar_limites()
 
 }
 
-/*void Contador(char cad[], int *puntos)
+void instrucciones()//Funciona de puta madre
 {
-	FILE* ranking;
+	int lineas = 0;
+	char texto[150];
+	FILE* instruc;
+	errno_t inst;
+	inst = fopen_s(&instruc, "Instrucciones.txt", "r");
+	fread_s(&texto, sizeof(texto), sizeof(char), _countof(texto), instruc);
+	iraxy(4, 3); printf("%s", texto);
+	fclose(instruc);
+}
+
+void contador(char cad, int* puntos)//NO FUNCIONA BIEN
+{
+	int i, j, tam, line = 0, begining;
+	JUG* jug, jugaux;
+	FILE* ranking, * rankingaux;
 	errno_t R;
-	R=fopen_s(&ranking, "Ranking.txt", "a+");
-	//fprintf(cad,(*puntos));
-	//leer el ficher y ordenar con el metrodo de la burbuja
-}*/
+	R = fopen_s(&ranking, "Ranking.txt", "a+");//abro el Ranking
+	if (R == NULL) printf("ERROR");
+	if (R != NULL)
+	{
+		fprintf_s(ranking, "%s %d", cad, (*puntos));//añado el nombre y la puntuacion al ranking en la última línea ya que ..."a+")
+		tam = 1 * sizeof(int);
+		jug = (JUG*)malloc(tam);//reservo una estructura del tamaño de una línea
+		rankingaux = ranking;//para saber cuantas lineas tiene el ranking, lo copio en el aux
+		while (!feof(rankingaux))
+		{
+			fscanf_s(rankingaux, "%s %d", &jug->nombre, _countof(jug->nombre), &jug->score);
+			line++;
+		}//Leo el archivo y anoto el numero de lineas
+		begining = fseek(ranking, tam * line, SEEK_SET);//regreso el puntero del fichero al inicio
+		jug = (JUG*)malloc(tam * line);//Reservo la memoria que necesito
+		jugaux = (*jug);
+		//Empiezo a leer el Ranking NO ordenado
+		line = 0;
+		while (!feof(ranking))
+		{
+			fscanf_s(ranking, "%s %d", &jug->nombre, _countof(jug->nombre), &jug->score);
+			*(jug + line) = jugaux;//copio jug a jug auxiliar línea por línea
+			line++;//cuento cuántas líneas tiene
+		}
+		//Método de la burbuja
+		for (i = 0; i < (line - 1); i++)//empezando en la linea 0
+		{
+			for (j = i + 1; j < line; j++)//empezando en la linea 1
+			{							  //COMPARA LA LINEA SUPERIOR CON LA INFERIOR
+				if ((jug + j)->score < (jug + i)->score)//Si el score inf es mayor que el sup
+				{
+					jugaux = *(jug + j);
+					*(jug + j) = *(jug + i);
+					*(jug + i) = jugaux;
+				}
+			}
+		}
+		for (i = 0; i < line; i++)
+		{
+			iraxy(5, 4 + i); printf("%s %d", (jug + i)->nombre, (jug + i)->score);
+			fprintf_s(ranking, "%s %d", (jug + i)->nombre, (jug + i)->score);
+		}
+		free(jug);//libero la memoria
+	}
+	fclose(ranking);//cierro el fichero
+}
