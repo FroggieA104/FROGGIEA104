@@ -31,7 +31,7 @@ void OculCurs();
 void iraxy(int, int);
 void Marco();
 void pintar_limites();
-void Ranking(char, int);
+void Ranking(char[], int);
 void instrucciones();
 
 using namespace std;
@@ -177,8 +177,8 @@ public:
 				Sleep(1000);
 				system("cls"); Marco();
 				iraxy(7, 6); printf("Introduce tu nombre:\n");
-				iraxy(7, 8); gets_s(P.nombre);//no recoge el nombre
-				Ranking(P.nombre[N], P.score);
+				iraxy(7, 8); gets_s(P.nombre, _countof(P.nombre));//no recoge el nombre
+				Ranking(P.nombre, P.score);
 			}
 		}
 		if (player->y == 10)//aumenta la puntuacion
@@ -371,11 +371,11 @@ void instrucciones()
 	fclose(instruc);
 }
 
-void Ranking(char cad, int puntos)
+void Ranking(char cad[], int puntos)
 {
 	int i, j, line = 0, begining;
 	JUG* jug, jugaux;
-	FILE* ranking, *auxiliar, *listajug;
+	FILE* ranking, *listajug;
 	errno_t R, R2;
 
 	R = fopen_s(&ranking, "Ranking.txt", "w+");//abro el Ranking
@@ -384,21 +384,19 @@ void Ranking(char cad, int puntos)
 	if (R == NULL) printf("ERROR");//comprobar si abre el fichero
 	if (R2 == NULL) printf("ERROR");//conprobar si abre el fichero
 
-	fprintf_s(listajug, "%s %d", &cad, &puntos);//añado el nombre y la puntuacion
-	jug = (JUG*)malloc(1*sizeof(int));//reservo una estructura del tamaño de una "línea"
-	jug = &jugaux;//para que no salga el error de que jugaux no esta inicializado
-	auxiliar = listajug;//copia de seguridad
+	fprintf_s(listajug, "%s %d", cad, puntos);//añado el nombre y la puntuacion
+	jug = (JUG*)malloc(1*sizeof(JUG));//reservo una estructura del tamaño de una "línea"
+	//jug = &jugaux;//para que no salga el error de que jugaux no esta inicializado
 	
-	while (!feof(auxiliar))
+	while (!feof(listajug))
 	{
-		fscanf_s(auxiliar, "%s %d", jugaux.nombre, _countof(jugaux.nombre), jugaux.score);
+		fscanf_s(listajug, "%s %d", jugaux.nombre, _countof(jugaux.nombre), jugaux.score);
 		line++;
 	}//Leo el archivo y anoto el numero de "lineas"
-	begining = fseek(ranking, line*sizeof(int), SEEK_SET);//regreso el puntero del fichero al inicio
-	jug = (JUG*)malloc(line*sizeof(int));//Reservo la memoria que necesito
+	begining = fseek(listajug, line*sizeof(int), SEEK_SET);//regreso el puntero del fichero al inicio
+	jug = (JUG*)malloc(line*sizeof(JUG));//Reservo la memoria que necesito
 
 	//Empiezo a leer el Ranking NO ordenado
-	begining = fseek(listajug, line * sizeof(int), SEEK_SET);//puntero al inicio del archivo
 	line = 0;
 	while (!feof(listajug))
 	{
