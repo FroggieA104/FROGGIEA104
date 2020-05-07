@@ -12,7 +12,7 @@
 #define RIGHT 77
 #define  LEFT 75
 #define ENTER 13
-#define N 5
+#define N 10
 #define RESET_COLOR "\x1b[0m"
 #define ROJO_T "\x1b[31m"
 #define VERDE_T "\x1b[32m"
@@ -31,7 +31,7 @@ void OculCurs();
 void iraxy(int, int);
 void Marco();
 void pintar_limites();
-void contador(char, int*);
+void Ranking(char, int);
 void instrucciones();
 
 using namespace std;
@@ -62,7 +62,7 @@ public:
 		}
 		else
 		{
-			if (rand() % 15 == 1)
+			if (rand() % 10 == 1)
 			{
 				cars.push_back(true);
 			}
@@ -96,7 +96,7 @@ private:
 	Player* player; //llama a la clase player (jugador)
 	vector<Lane*> map; // vector que llama a la clase y le pone como variable referenciada el mapa
 public:
-	JUG P;
+	JUG P;//inicializacion de la estructura
 	Game(int w = 20, int h = 10)// condiciones inicales del tamaño del juego
 	{
 		numberofLanes = h;
@@ -161,8 +161,6 @@ public:
 				player->y--;
 			if (current == DOWN)
 				player->y++;
-			if (current == 'q')
-				quit = true;
 		}
 	}
 	void Logic()//indica la logica del movimiento, es decir, como se desarrolla el juego
@@ -173,13 +171,14 @@ public:
 				map[i]->Move();
 			if (map[i]->CheckPos(player->x) && player->y == i)//choque del coche y del personaje
 			{
+				quit = true;
 				system("cls"); Marco();
 				iraxy(12, 8); printf("GAME OVER");
 				Sleep(1000);
 				system("cls"); Marco();
 				iraxy(7, 6); printf("Introduce tu nombre:\n");
-				iraxy(7, 8); gets_s(P.nombre, _countof(P.nombre));
-				contador(P.nombre[N], &P.score);//realiza una especie de bucle  (T^T)
+				iraxy(7, 8); gets_s(P.nombre);//no recoge el nombre
+				Ranking(P.nombre[N], P.score);
 			}
 		}
 		if (player->y == 10)//aumenta la puntuacion
@@ -273,6 +272,16 @@ int main()
 					if (tecla == ENTER)
 					{
 						if (x == 10) { p2 = FALSE; start = 0; }
+						else
+						{
+							p2 = FALSE;
+							system("cls"); Marco();
+							iraxy(10, 9); printf(ROJO_T "FroggieA104" RESET_COLOR);
+							iraxy(17, 12); printf(AMARILLO_T "Instrucciones" RESET_COLOR);
+							iraxy(17, 13); printf(VERDE_T "Start" RESET_COLOR);
+							iraxy(17, 14); printf(AZUL_T"EXIT" RESET_COLOR);
+							iraxy(13, y); printf(CYAN_T "==>" RESET_COLOR);
+						}
 					}
 				}
 				break;
@@ -351,10 +360,9 @@ void pintar_limites()
 
 }
 
-void instrucciones()//Funciona de puta madre
+void instrucciones()
 {
-	int lineas = 0;
-	char texto[150];
+	char texto[155];
 	FILE* instruc;
 	errno_t inst;
 	inst = fopen_s(&instruc, "Instrucciones.txt", "r");
@@ -363,55 +371,61 @@ void instrucciones()//Funciona de puta madre
 	fclose(instruc);
 }
 
-void contador(char cad, int* puntos)//NO FUNCIONA BIEN
+void Ranking(char cad, int puntos)
 {
-	int i, j, tam, line = 0, begining;
+	int i, j, line = 0, begining;
 	JUG* jug, jugaux;
-	FILE* ranking, * rankingaux;
-	errno_t R;
-	R = fopen_s(&ranking, "Ranking.txt", "a+");//abro el Ranking
-	if (R == NULL) printf("ERROR");
-	if (R != NULL)
+	FILE* ranking, *auxiliar, *listajug;
+	errno_t R, R2;
+
+	R = fopen_s(&ranking, "Ranking.txt", "w+");//abro el Ranking
+	R2 = fopen_s(&listajug, "listajug.txt", "a");
+
+	if (R == NULL) printf("ERROR");//comprobar si abre el fichero
+	if (R2 == NULL) printf("ERROR");//conprobar si abre el fichero
+
+	fprintf_s(listajug, "%s %d", &cad, &puntos);//añado el nombre y la puntuacion
+	jug = (JUG*)malloc(1*sizeof(int));//reservo una estructura del tamaño de una "línea"
+	jug = &jugaux;//para que no salga el error de que jugaux no esta inicializado
+	auxiliar = listajug;//copia de seguridad
+	
+	while (!feof(auxiliar))
 	{
-		fprintf_s(ranking, "%s %d", cad, (*puntos));//añado el nombre y la puntuacion al ranking en la última línea ya que ..."a+")
-		tam = 1 * sizeof(int);
-		jug = (JUG*)malloc(tam);//reservo una estructura del tamaño de una línea
-		rankingaux = ranking;//para saber cuantas lineas tiene el ranking, lo copio en el aux
-		while (!feof(rankingaux))
-		{
-			fscanf_s(rankingaux, "%s %d", &jug->nombre, _countof(jug->nombre), &jug->score);
-			line++;
-		}//Leo el archivo y anoto el numero de lineas
-		begining = fseek(ranking, tam * line, SEEK_SET);//regreso el puntero del fichero al inicio
-		jug = (JUG*)malloc(tam * line);//Reservo la memoria que necesito
-		jugaux = (*jug);
-		//Empiezo a leer el Ranking NO ordenado
-		line = 0;
-		while (!feof(ranking))
-		{
-			fscanf_s(ranking, "%s %d", &jug->nombre, _countof(jug->nombre), &jug->score);
-			*(jug + line) = jugaux;//copio jug a jug auxiliar línea por línea
-			line++;//cuento cuántas líneas tiene
-		}
-		//Método de la burbuja
-		for (i = 0; i < (line - 1); i++)//empezando en la linea 0
-		{
-			for (j = i + 1; j < line; j++)//empezando en la linea 1
-			{							  //COMPARA LA LINEA SUPERIOR CON LA INFERIOR
-				if ((jug + j)->score < (jug + i)->score)//Si el score inf es mayor que el sup
-				{
-					jugaux = *(jug + j);
-					*(jug + j) = *(jug + i);
-					*(jug + i) = jugaux;
-				}
+		fscanf_s(auxiliar, "%s %d", jugaux.nombre, _countof(jugaux.nombre), jugaux.score);
+		line++;
+	}//Leo el archivo y anoto el numero de "lineas"
+	begining = fseek(ranking, line*sizeof(int), SEEK_SET);//regreso el puntero del fichero al inicio
+	jug = (JUG*)malloc(line*sizeof(int));//Reservo la memoria que necesito
+
+	//Empiezo a leer el Ranking NO ordenado
+	begining = fseek(listajug, line * sizeof(int), SEEK_SET);//puntero al inicio del archivo
+	line = 0;
+	while (!feof(listajug))
+	{
+		fscanf_s(listajug, "%s %d", jugaux.nombre, _countof(jugaux.nombre), jugaux.score);
+		*(jug + line) = jugaux;//copio jug a jugaux línea por línea
+		line++;//cuento cuántas líneas tiene
+	}
+	//Método de la burbuja
+	for (i = 0; i < (line - 1); i++)//empezando en la linea 0
+	{
+		for (j = i + 1; j < line; j++)//empezando en la linea 1
+		{							  //COMPARA LA LINEA SUPERIOR CON LA INFERIOR
+			if ((jug + j)->score < (jug + i)->score)//Si el score inf es mayor que el sup
+			{
+				jugaux = *(jug + j);
+				*(jug + j) = *(jug + i);
+				*(jug + i) = jugaux;
 			}
 		}
-		for (i = 0; i < line; i++)
-		{
-			iraxy(5, 4 + i); printf("%s %d", (jug + i)->nombre, (jug + i)->score);
-			fprintf_s(ranking, "%s %d", (jug + i)->nombre, (jug + i)->score);
-		}
-		free(jug);//libero la memoria
 	}
+	for (i = 0; i < line; i++)
+	{
+		iraxy(5, 4 + i); printf("%s %d", (jug + i)->nombre, (jug + i)->score);
+		fprintf_s(ranking, "%s %d", (jug + i)->nombre, (jug + i)->score);
+	}
+	
 	fclose(ranking);//cierro el fichero
+	fclose(listajug);
+	free(jug);//libero la memoria
 }
