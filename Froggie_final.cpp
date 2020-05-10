@@ -90,7 +90,7 @@ class Game
 {
 private:
 	
-	int numberofLanes, width, i, j;
+	int numberofLanes, width;
 	size_t a = 0;
 	Player* player; //llama a la clase player (jugador)
 	vector<Lane*> map; // vector que llama a la clase y le pone como variable referenciada el mapa
@@ -98,6 +98,7 @@ public:
 	JUG P;
 	Game(int w = 20, int h = 10)// condiciones inicales del tamaño del juego
 	{
+		int i;
 		numberofLanes = h;
 		width = w;
 		for (i = 0; i < numberofLanes; i++)
@@ -120,7 +121,7 @@ public:
 	{
 		pintar_limites();
 		system("cls");//limpia la pantalla cada vez que se mueven los coches(no se peta)
-
+		int i, j;
 		for (i = 0; i < numberofLanes; i++) //largo
 		{
 			for (j = 0; j < width; j++)//ancho
@@ -163,6 +164,8 @@ public:
 	}
 	bool Logic()//indica la logica del movimiento, es decir, como se desarrolla el juego
 	{
+		int i;
+		P.score = 0;
 		for (i = 1; i < numberofLanes - 1; i++)
 		{
 			if (rand() % 5 == 1)//genera el mov del plano
@@ -374,7 +377,7 @@ void instrucciones()
 	if (inst != NULL) printf("ERROR");
 	while (feof(instruc)==0)
 	{
-		fgets(texto, 50, instruc);
+		fgets(texto, _countof(texto), instruc);
 		i++;
 		iraxy(4, 2 + i); printf("%s", texto);
 	}
