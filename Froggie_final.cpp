@@ -390,16 +390,13 @@ void Ranking(char cad[], int puntos)
 	char aux[12];
 
 	R = fopen_s(&ranking, "Ranking.txt", "w+");//abro el Ranking
-	R2 = fopen_s(&listajug, "listajug.txt", "a");
+	R2 = fopen_s(&listajug, "listajug.txt", "a+");
 
 	if (R != NULL) printf("ERROR");//comprobar si abre el fichero
 	if (R2 != NULL) printf("ERROR");//comprobar si abre el fichero
 
 	fprintf_s(listajug, "\n%s %d", cad, puntos);//añado el nombre y la puntuación
-	fclose(listajug);//cierror el fichero para abrirlo en modo lectura(solo para ordenarlo)
-	R2 = fopen_s(&listajug, "listajug.txt", "r");
-	if (R2 != NULL) printf("ERROR");//comprobar si abre el fichero
-
+	fseek(listajug, 0, SEEK_SET);//regreso el puntero del fichero al inicio
 	jug = (JUG*)malloc(1 * sizeof(JUG));//reservo una estructura del tamaño de una "línea"
 	
 	while (feof(listajug)==0)
