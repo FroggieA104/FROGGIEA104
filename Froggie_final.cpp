@@ -37,7 +37,7 @@ using namespace std;
 class Lane //pantalla
 {
 private:
-	deque<bool>cars;//vector booleano que indica la posiciÛn de los coches
+	deque<bool>cars;//vector booleano que indica la posici√≥n de los coches
 	bool right; //variable booleana
 public:
 	Lane(int width)
@@ -75,11 +75,11 @@ public:
 
 };
 
-class Player //posiciÛn del jugador
+class Player //posici√≥n del jugador
 {
 public:
 	int x, y;
-	Player(int width) //posiciÛn inicial del jugador
+	Player(int width) //posici√≥n inicial del jugador
 	{
 		x = (width / 2) + 1;
 		y = 23;
@@ -90,16 +90,17 @@ class Game
 {
 private:
 	
-	int numberofLanes, width;
+	int numberofLanes, width, i, j;
+	size_t a = 0;
 	Player* player; //llama a la clase player (jugador)
 	vector<Lane*> map; // vector que llama a la clase y le pone como variable referenciada el mapa
 public:
-	JUG P;//inicializacion de la estructura
-	Game(int w = 20, int h = 10)// condiciones inicales del tamaÒo del juego
+	JUG P;
+	Game(int w = 20, int h = 10)// condiciones inicales del tama√±o del juego
 	{
 		numberofLanes = h;
 		width = w;
-		for (int i = 0; i < numberofLanes; i++)
+		for (i = 0; i < numberofLanes; i++)
 		{
 			map.push_back(new Lane(width)); //agrega en el mapa lo que hay en la clase e indica el ancho maximo
 		}
@@ -108,7 +109,7 @@ public:
 	~Game()//destructor del juego
 	{
 		delete player;
-		for (int i = 0; i < map.size(); i++)
+		for (a = 0; a < map.size(); a++)
 		{
 			Lane* current = map.back(); //
 			map.pop_back();//elimina el mapa
@@ -120,9 +121,9 @@ public:
 		pintar_limites();
 		system("cls");//limpia la pantalla cada vez que se mueven los coches(no se peta)
 
-		for (int i = 0; i < numberofLanes; i++) //largo
+		for (i = 0; i < numberofLanes; i++) //largo
 		{
-			for (int j = 0; j < width; j++)//ancho
+			for (j = 0; j < width; j++)//ancho
 			{
 				if (i == 5 && (j == width / 3 + 3))
 					printf(ROJO_T"FROGGIEA104" RESET_COLOR);
@@ -162,7 +163,7 @@ public:
 	}
 	bool Logic()//indica la logica del movimiento, es decir, como se desarrolla el juego
 	{
-		for (int i = 1; i < numberofLanes - 1; i++)
+		for (i = 1; i < numberofLanes - 1; i++)
 		{
 			if (rand() % 5 == 1)//genera el mov del plano
 				map[i]->Move();
@@ -175,7 +176,9 @@ public:
 				iraxy(7, 6); printf("Introduce tu nombre:\n");
 				iraxy(7, 8); gets_s(P.nombre, sizeof(P.nombre));
 				system("cls"); Marco();
+				iraxy(13, 3); printf_s("Ranking");
 				Ranking(P.nombre, P.score);//realiza e imprime el fichero Ranking
+				Sleep(1000);
 				return(0);
 			}
 		}
@@ -185,6 +188,7 @@ public:
 			player->y = numberofLanes - 1;
 			printf("\x07");
 		}
+		return(1);
 	}
 };
 
@@ -334,7 +338,7 @@ void Marco()
 
 void pintar_limites()
 {
-	int i; //Variable local de la funciÛn
+	int i; //Variable local de la funci√≥n
 	for (i = 2; i < 37; i++) //Limites del juego por arriba y abajo
 	{
 		iraxy(i, 2);
@@ -391,12 +395,12 @@ void Ranking(char cad[], int puntos)
 	if (R != NULL) printf("ERROR");//comprobar si abre el fichero
 	if (R2 != NULL) printf("ERROR");//comprobar si abre el fichero
 
-	fprintf_s(listajug, "\n%s %d", cad, puntos);//aÒado el nombre y la puntuaciÛn
+	fprintf_s(listajug, "\n%s %d", cad, puntos);//a√±ado el nombre y la puntuaci√≥n
 	fclose(listajug);//cierror el fichero para abrirlo en modo lectura(solo para ordenarlo)
 	R2 = fopen_s(&listajug, "listajug.txt", "r");
 	if (R2 != NULL) printf("ERROR");//comprobar si abre el fichero
 
-	jug = (JUG*)malloc(1 * sizeof(JUG));//reservo una estructura del tamaÒo de una "lÌnea"
+	jug = (JUG*)malloc(1 * sizeof(JUG));//reservo una estructura del tama√±o de una "l√≠nea"
 	
 	while (feof(listajug)==0)
 	{
@@ -412,10 +416,10 @@ void Ranking(char cad[], int puntos)
 	{
 		fscanf_s(listajug, "%s", (jug + line)->nombre, _countof((jug + line)->nombre));
 		fscanf_s(listajug, "%d", &(jug + line)->score);//guardo en el vector de estructuras los datos del fichero
-		line++;//cuento cu·ntas lÌneas tiene
+		line++;//cuento cu√°ntas l√≠neas tiene
 	}
 	
-	//MÈtodo de la burbuja(COMPARA UNA LINEA CON TODAS LAS DEM¡S)
+	//M√©todo de la burbuja(COMPARA UNA LINEA CON TODAS LAS DEM√ÅS)
 	for (i = 0; i < (line - 1); i++)
 	{
 		for (j = i + 1; j < line; j++)
@@ -431,9 +435,9 @@ void Ranking(char cad[], int puntos)
 	for (i = 0; i < line; i++)//imprimir en el fichero del ranking
 	{
 		fprintf_s(ranking, "%s %d", (jug + i)->nombre, (jug + i)->score);
-		if (i >= 0 || i <= 5)//solo imprimir· en pantalla los primeros 5
+		if (i >= 0 && i < 6)//solo imprimir√° en pantalla los primeros 5
 		{
-			iraxy(5, 4 + i); printf("%d: %s %d", i + 1, (jug + i)->nombre, (jug + i)->score);
+			iraxy(5, 6 + i); printf("%d: %s %d", i + 1, (jug + i)->nombre, (jug + i)->score);
 		}		
 	}
 	fclose(ranking);//cierro el fichero
